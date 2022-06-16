@@ -354,6 +354,11 @@ type Option struct {
 	Value string `json:"value" structs:"value"`
 }
 
+// Id represents an option value for a multi select user picker
+type Id struct {
+	Id string `json:"id" structs:"id"`
+}
+
 // UnmarshalJSON will transform the Jira time into a time.Time
 // during the transformation of the Jira JSON response
 func (t *Time) UnmarshalJSON(b []byte) error {
@@ -1331,7 +1336,9 @@ func InitIssueWithMetaAndFields(metaProject *MetaProject, metaIssuetype *MetaIss
 			case "component":
 				issueFields.Unknowns[jiraKey] = []Component{{Name: value}}
 			case "option":
-				issueFields.Unknowns[jiraKey] = []map[string]string{{"value": value}}
+				issueFields.Unknowns[jiraKey] = []Option{{Value: value}}
+			case "id":
+				issueFields.Unknowns[jiraKey] = []Id{{Id: value}}
 			default:
 				issueFields.Unknowns[jiraKey] = []string{value}
 			}
@@ -1362,6 +1369,10 @@ func InitIssueWithMetaAndFields(metaProject *MetaProject, metaIssuetype *MetaIss
 		case "option":
 			issueFields.Unknowns[jiraKey] = Option{
 				Value: value,
+			}
+		case "id":
+			issueFields.Unknowns[jiraKey] = Id{
+				Id: value,
 			}
 		default:
 			return nil, fmt.Errorf("unknown issue type encountered: %s for %s", valueType, key)
